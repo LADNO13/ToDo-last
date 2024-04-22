@@ -19,7 +19,7 @@ const getTaskData = async () => {
   }
 };
 
-// Отслеживаем изменения в taskId и обновляем данные задачи
+
 watch(taskId, async (newId) => {
   if (newId) {
     await getTaskData();
@@ -28,17 +28,21 @@ watch(taskId, async (newId) => {
 
 
 const updateTask = async () => {
-  try {
+  if (taskTitle.value.trim() === '') {
+    alert('Заголовок и описание задачи не могут быть пустыми');
+  } else {
+    try {
     await axios.patch(`https://4df2a8dfd4f42e3c.mokky.dev/tasks/${taskId.value}`, {
       title: taskTitle.value,
       description: taskDescripton.value
     });
   } catch (error) {
     console.error('Ошибка при обновлении данных задачи:', error);
+  } 
   }
 };
 
-// Получаем данные задачи при монтировании компонента
+
 getTaskData();
 </script>
 
@@ -67,16 +71,12 @@ getTaskData();
   align-items: center;
 }
 
-.header-nav{
-  display: flex;
-  gap : 10px;
-  align-items: center;
-}
 
 
 .btn-save{
   background-image: url('../assets/free-icon-save-2541652.png');
   background-size: cover;
+  background-color: #ffffff;
   cursor: pointer;
   width: 30px;
   height: 30px;

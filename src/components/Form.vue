@@ -109,6 +109,7 @@ onMounted(getData)
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  background-color: #ffffff;
 }
 
 .btn-add img {
@@ -122,7 +123,7 @@ onMounted(getData)
 
 .tasks{
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 15px;
 }
 
@@ -165,9 +166,8 @@ onMounted(getData)
   width: 22px;
   height: 25px;
   border: none;
+  cursor: pointer;
 }
-
-
 
 
 @media (max-width: 425px) {
