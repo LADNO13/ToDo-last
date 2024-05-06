@@ -1,14 +1,17 @@
 <script setup>
+import Message from './Message.vue';
 import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 
 const route = useRoute();
+const router = useRouter();
 const taskId = ref(route.params.id);
 const taskTitle = ref('');
 const taskDescripton = ref('');
 
-// Функция для получения данных задачи по идентификатору
+const showMessage = ref(false);
+
 const getTaskData = async () => {
   try {
     const response = await axios.get(`https://4df2a8dfd4f42e3c.mokky.dev/tasks/${taskId.value}`);
@@ -26,20 +29,29 @@ watch(taskId, async (newId) => {
   }
 });
 
+const errorMessege = () => {
+  showMessage.value = true
+  Message.value = 'Заполните название'
+}
+
+const updateMessege = () => {
+  showMessage.value = true
+  Message.value = 'Задача обновлена'
+}
 
 const updateTask = async () => {
-  if (taskTitle.value.trim() === '') {
-    alert('Заголовок и описание задачи не могут быть пустыми');
-  } else {
+  if (taskTitle.value.trim() === '') return(errorMessege())
+
     try {
     await axios.patch(`https://4df2a8dfd4f42e3c.mokky.dev/tasks/${taskId.value}`, {
       title: taskTitle.value,
       description: taskDescripton.value
-    });
+    })
+    updateMessege();
   } catch (error) {
     console.error('Ошибка при обновлении данных задачи:', error);
   } 
-  }
+  
 };
 
 
@@ -47,12 +59,14 @@ getTaskData();
 </script>
 
 <template>
-  <div>
-    <div class="header">
+  <Message :Message = "Message.value" v-if="showMessage === true" @close="showMessage = false"/>
+  <div class="TaskPage-container">
+    <div class="TaskPage-header">
+      <div class="TaskPage-nav">
+        <button class="btn-back" @click="router.go(-1)"><img src="../assets/icons8-circle-48.png" alt="back"></button>
         <h1>Задача</h1>
-      
-      
-      <button class="btn-save" @click="updateTask"></button>
+      </div>  
+        <button class="btn-save" @click="updateTask"><img src="../assets/icons8-save-50.png" alt=""></button>
     </div>
     
     <div>
@@ -65,27 +79,76 @@ getTaskData();
 
 <style scoped>
 
-.header{
+.TaskPage-container{
+  position: relative;
+  top: -40px;
+} 
+
+.TaskPage-header{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: #ffff;
 }
 
+.TaskPage-nav{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
 
 .btn-save{
-  background-image: url('../assets/free-icon-save-2541652.png');
-  background-size: cover;
-  background-color: #ffffff;
+  background-color: transparent;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
   border: none;
 }
 
-.btn-save:hover{
-  scale: 1.1;
-  transition: 0.5s;
+.btn-save img{
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
 }
 
+.btn-back{
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-back img{
+  width: 30px;
+  height: 30px;
+}
+
+
+@media (max-width: 425px) {
+
+.TaskPage-container{
+  position: relative;
+  top: -30px;
+}  
+
+.TaskPage-nav h1{
+  font-size: 25px;
+} 
+
+.btn-save img{
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+}
+
+.btn-back{
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-back img{
+  width: 20px;
+  height: 20px;
+}
+
+}
 </style>

@@ -1,22 +1,23 @@
 body {
-  background-color: #ced4df;
   font-family: 'Roboto', sans-serif;
+  background-color: rgb(25, 25, 25);
+  margin: 0 auto;
+  padding: 0;
 }
 
 .container {
   width: 70%;
-  padding: 10px;
-  background-color: #ffffff;
   margin: 0 auto;
-  border-radius: 20px;
-  box-shadow:  0px 0px 10px rgba(55, 54, 54, 0.5);
 }
 
 input {
   width: calc(100% - 30px);
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 18px 10px;
+  border-radius: 10px;
   border: none;
+  color: white;
+  background-color: rgb(38, 38, 38);
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
 }
@@ -24,11 +25,15 @@ input {
 
 
 textarea{
-  width: calc(100% - 15px);
+  width: calc(100% - 30px);
   border: none;
+  border-radius: 15px;
+  padding: 18px 10px;
+  background-color: rgb(38, 38, 38);
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
   resize: none;
+  color: white;
 }
 
 textarea:focus, input:focus{
@@ -49,12 +54,6 @@ textarea:focus, input:focus{
   color:  rgb(0, 0, 0);
 }
 
-@media (max-width: 375px) {
-  .container {
-    width: 100%;
-    text-align: center;
-  }  
-}
 
 
 

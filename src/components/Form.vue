@@ -1,13 +1,17 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import Message from './Message.vue';
+import { onMounted, ref } from 'vue';
 import axios from 'axios';
+
+const showMessage = ref(false);
+
+const showConfirmation = ref(false);
 
 
 const task = ref({
   id: '',
   title: '',
   description: '',
-  colors: ['#fec971', '#fe9b72', '#b693fd','#00d4fe','#e4ef8f','#5aef8f','#f9378f','#98dad2c9','#ff8d9785','#b6a597','#00ff97','#0f5d97'],
   createdAt: new Date()
 })
 
@@ -23,25 +27,21 @@ const getData = (async () => {
  }
 });
 
-const getRandomColor = () => {
-  const randomIndex = Math.floor(Math.random() * task.value.colors.length);
-  return task.value.colors[randomIndex];
-}
+
 
 const addTask = async () => {
-  if (task.value.title.trim() === '') {
-    alert('Задача не может быть пустой');
-  } else {
+  if (task.value.title.trim() === '') return(showMessage.value = true) 
+    
     try {
-      task.value.color = getRandomColor();
       task.value.createdAt = new Date();
       await axios.post('https://4df2a8dfd4f42e3c.mokky.dev/tasks', task.value);
       task.value.title = '';
       await getData(); 
+      showMessage.value = false;
     } catch (err) {
       console.log(err);
     }
-  }
+  
 };
 
 const removeTask = async (id) => {
@@ -54,11 +54,14 @@ const removeTask = async (id) => {
   }
 }
 
+
 onMounted(getData)
 </script>
 
 <template>
-    <h1>Список задач</h1>
+  <div>
+    <Message Message="Заполните поле" v-if="showMessage === true" @close="showMessage = false"/>
+  <div class="form-container">
     <div class="form">
       <input 
         class="form-input"
@@ -66,64 +69,81 @@ onMounted(getData)
         v-model="task.title" 
         placeholder="Новая задача"
       >
-      <button @click="addTask" class="btn-add"><img src="../assets/free-icon-plus-153605.png" alt=""></button>  
+      <button @click="addTask" class="btn-add"><img src="../assets/plus-50.png" alt=""></button>  
     </div>
-    
+   
     <div class="tasks" v-auto-animate>
-      <div class="tasks-card" v-for="task in tasks"
-      :key="task.id"
+      <div class="tasks-card" v-for="(taskItem, index) in tasks"
+      :key="taskItem.id"
       :title="task.title"
-      :style="{ backgroundColor: task.color }"
       >
         <div class="tasks-title">
-          <router-link :to="`/TaskPage/${task.id}`" style="text-decoration: none;">
-            <p>{{ task.title }}</p>
+          <router-link :to="`/TaskPage/${taskItem.id}`" style="text-decoration: none;">
+            <p>{{ taskItem.title }}</p>
           </router-link>
         </div>
         <div class="tasks-btn">
-          <button @click="removeTask(task.id)" class="tasks-btn delete" :style="{ backgroundColor: task.color, padding: 0, border: 'none' }"></button>
+          <button @click="showConfirmation = true" class="tasks-btn delete" ><img src="../assets/trash-48.png" alt=""></button>
           <td>{{ task.createdAt ? new Date(task.createdAt).toLocaleDateString('ru-RU') : '' }}</td>
+
+          <transition name="fade">
+               <div v-if="showConfirmation === true" class="confirmation-container">
+                      <div class="confirmation-content">
+                         <p>Вы уверенны?</p>
+                        <button @click="removeTask(index) ; showConfirmation = false" class="confirmation-btn">да</button>
+                        <button @click="showConfirmation = false" class="confirmation-btn">нет</button>
+                      </div>
+              </div>
+          </transition>
+         
         </div>
       </div>
     </div> 
    
 
+  </div>
+  </div>
+  
+    
 </template>
 
 <style scoped>
 
 
+
 .form {
-  padding: 10px 0px;
+  width: 100%;
+  position: relative;
+  top: -25px;
   text-align: center;
-  width: calc(100% - 30px);
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 }
 
 .btn-add {
-  width: 60px;
-  height: 40px;
+  width: 90px;
+  height: 52px;
   border: none;
+  border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  background-color: #ffffff;
+  background-color: #1e6f9f;
 }
 
 .btn-add img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
-.btn-add:hover{
-  scale: 1.1;
-}
+
 
 .tasks{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  justify-items: center;
   gap: 15px;
 }
 
@@ -137,36 +157,71 @@ onMounted(getData)
   flex-direction: column;
   justify-content: space-between;
   box-shadow:  0px 0px 8px rgba(4, 4, 4, 0.5);
+  background-color: #262626;
+  color: #f2f2f2;
 }
 
-.tasks-card:hover{
-  scale: 1.1;
-  transition: 0.5s;
-}
+
 
 .tasks-title {
   white-space: normal;
+  color:#757575 ;
+  
 }
 
 .tasks-title p{
-  color: black;
+  color: #f2f2f2;
 }
 
 .tasks-btn{
   display: flex;
   gap: 10px;
   justify-content: space-between;
+  align-items:center ;
 }
 
-
-
 .delete{
-  background-image: url('../assets/trash-can-solid.svg');
-  background-size: cover;
-  width: 22px;
-  height: 25px;
   border: none;
+  background-color: #262626;
   cursor: pointer;
+}
+
+.delete img {
+  width: 30px;
+  height: 30px;
+}
+
+.confirmation-container {
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3); 
+  z-index: 10;
+}
+
+.confirmation-content {
+  position: absolute; 
+  top: 50%;
+  left: 50%;
+  background-color: rgb(25, 25, 25);
+  color: white;
+  padding: 15px;
+  border-radius: 15px;
+  transform: translate(-50%, -50%); 
+  z-index: 20; 
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirmation-btn {
+  background-color: #1e6f9f;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 0;
+  color: white;
 }
 
 
@@ -193,4 +248,11 @@ onMounted(getData)
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
 }
+@media (max-width: 1024px) {
+.tasks{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+}
 </style>
+
