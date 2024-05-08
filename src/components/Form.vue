@@ -73,7 +73,7 @@ onMounted(getData)
     </div>
    
     <div class="tasks" v-auto-animate>
-      <div class="tasks-card" v-for="(taskItem, index) in tasks"
+      <div class="tasks-card" v-for="(taskItem) in tasks"
       :key="taskItem.id"
       :title="task.title"
       >
@@ -90,7 +90,7 @@ onMounted(getData)
                <div v-if="showConfirmation === true" class="confirmation-container">
                       <div class="confirmation-content">
                          <p>Вы уверенны?</p>
-                        <button @click="removeTask(index) ; showConfirmation = false" class="confirmation-btn">да</button>
+                        <button @click="removeTask(taskItem.id) ; showConfirmation = false" class="confirmation-btn">да</button>
                         <button @click="showConfirmation = false" class="confirmation-btn">нет</button>
                       </div>
               </div>
